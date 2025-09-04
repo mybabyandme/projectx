@@ -1,5 +1,10 @@
 {
-  "buildCommand": "prisma generate && npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install"
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "env": {
+    "PRISMA_GENERATE_DATAPROXY": "true"
+  }
 }
