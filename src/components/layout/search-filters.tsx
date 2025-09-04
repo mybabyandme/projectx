@@ -174,7 +174,7 @@ export default function SearchFilters({
               placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             />
             {searchQuery && (
               <button
@@ -344,4 +344,4 @@ export default function SearchFilters({
       </AnimatePresence>
     </div>
   )
-}
+}        

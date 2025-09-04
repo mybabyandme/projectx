@@ -111,33 +111,35 @@ export default function ResultsList({
   const [expandedActions, setExpandedActions] = useState<string | null>(null)
 
   const formatFieldValue = (field: ResultField, value: any, item: any) => {
-    if (field.render) {
-      return field.render(value, item)
+    // For custom render functions, let them transform the value first
+    let processedValue = value
+    if (field.render && field.type !== 'custom') {
+      processedValue = field.render(value, item)
     }
 
     switch (field.type) {
       case 'currency':
-        return formatCurrency(value || 0)
+        return formatCurrency(processedValue || 0)
       
       case 'number':
-        return (value || 0).toLocaleString()
+        return (processedValue || 0).toLocaleString()
       
       case 'date':
-        return value ? formatDate(new Date(value)) : '-'
+        return processedValue ? formatDate(new Date(processedValue)) : '-'
       
       case 'badge':
-        const badgeColor = getBadgeColor(value, field.key)
+        const badgeColor = getBadgeColor(processedValue, field.key)
         return (
           <span className={cn(
             'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
             badgeColor
           )}>
-            {value}
+            {processedValue}
           </span>
         )
       
       case 'status':
-        const statusConfig = getStatusConfig(value)
+        const statusConfig = getStatusConfig(processedValue)
         return (
           <span className={cn(
             'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
@@ -151,23 +153,27 @@ export default function ResultsList({
       case 'avatar':
         return (
           <div className="flex items-center gap-2">
-            {value?.image ? (
+            {processedValue?.image ? (
               <img 
-                src={value.image} 
-                alt={value.name || ''} 
+                src={processedValue.image} 
+                alt={processedValue.name || ''} 
                 className="w-8 h-8 rounded-full object-cover"
               />
             ) : (
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-sm font-medium text-white">
-                {(value?.name || value || '').charAt(0).toUpperCase()}
+                {(processedValue?.name || processedValue || '').charAt(0).toUpperCase()}
               </div>
             )}
-            <span className="text-sm font-medium">{value?.name || value}</span>
+            <span className="text-sm font-medium">{processedValue?.name || processedValue}</span>
           </div>
         )
       
+      case 'custom':
+        // For custom type, the render function should handle everything
+        return field.render ? field.render(value, item) : processedValue
+      
       default:
-        return value || '-'
+        return processedValue || '-'
     }
   }
 
@@ -467,7 +473,7 @@ function ListViewContent({
                       e.stopPropagation()
                       actions[0].onClick(item)
                     }}
-                    disabled={actions[0].disabled || isLoading}
+                    disabled={(actions[0].disabled ?? false) || isLoading}
                     className={cn(
                       "p-1.5 rounded-md transition-colors",
                       actions[0].variant === 'primary' && "bg-blue-600 text-white hover:bg-blue-700",
@@ -505,12 +511,12 @@ function ListViewContent({
                               action.onClick(item)
                               setExpandedActions(null)
                             }}
-                            disabled={action.disabled || isLoading}
+                            disabled={(action.disabled ?? false) || isLoading}
                             className={cn(
                               "w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition-colors",
                               action.variant === 'danger' && "text-red-600 hover:bg-red-50",
                               action.variant === 'success' && "text-green-600 hover:bg-green-50",
-                              action.disabled && "opacity-50 cursor-not-allowed"
+                              (action.disabled ?? false) && "opacity-50 cursor-not-allowed"
                             )}
                           >
                             {action.isLoading ? (
@@ -633,12 +639,12 @@ function CardViewContent({
                             action.onClick(item)
                             setExpandedActions(null)
                           }}
-                          disabled={action.disabled || isLoading}
+                          disabled={(action.disabled ?? false) || isLoading}
                           className={cn(
                             "w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition-colors",
                             action.variant === 'danger' && "text-red-600 hover:bg-red-50",
                             action.variant === 'success' && "text-green-600 hover:bg-green-50",
-                            action.disabled && "opacity-50 cursor-not-allowed"
+                            (action.disabled ?? false) && "opacity-50 cursor-not-allowed"
                           )}
                         >
                           {action.isLoading ? (
@@ -720,4 +726,4 @@ function PaginationComponent({ pagination, onPageChange, onLimitChange, compact 
       </div>
     </div>
   )
-}
+}        
