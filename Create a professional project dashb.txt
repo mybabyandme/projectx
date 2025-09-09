@@ -1,0 +1,382 @@
+Create a professional project dashboard for AgileTrack Pro following our established design system:
+
+how about for project definition, objectvies, success indicatiors to be monitored, progress reports, activites dinifition an d tracking, sponsor project financing tracking transafers and confirmations, 
+
+REQUIREMENTS:
+- Use StatsHeader, SearchFilters, and ResultsList components for consistency
+- Display project overview with key metrics (tasks, budget, timeline, team)
+- Include progress charts using Recharts (burndown, budget utilization)
+- Show recent activity feed and upcoming deadlines
+- Implement quick actions (create task, add member, update status)
+- Use our color system: blue for primary, gray for neutral, status colors for project states
+- Mobile-first responsive design with card/list view toggle
+- Professional typography and spacing following Tailwind standards
+
+COMPONENTS TO CREATE:
+- ProjectDashboardView (main container)
+- ProjectMetricsCards (stats display)
+- ActivityFeed (recent changes)
+- QuickActions (floating action buttons)
+
+FEATURES:
+- Real-time progress tracking
+- Budget vs spent visualization
+- Team member avatars with roles
+- Task completion trends
+- Risk indicators and alerts
+
+------------------------
+Create a comprehensive project definition wizard for AgileTrack Pro following our design system:
+
+REQUIREMENTS:
+- Multi-step wizard with progress indicator and navigation
+- Use our established form patterns with Input, Textarea, and Select components
+- Implement project templates (Government, NGO, Corporate, Agile, Waterfall)
+- Include project charter creation with vision, scope, and deliverables
+- Stakeholder identification and role assignment interface
+- Risk assessment matrix and mitigation planning
+- Professional validation with Zod schemas and real-time feedback
+- Auto-save functionality and draft management
+
+COMPONENTS TO CREATE:
+- ProjectWizardView (main stepper container)
+- ProjectBasicsForm (name, description, methodology)
+- StakeholderMatrix (roles and responsibilities)
+- ScopeDefinition (deliverables and boundaries)
+- RiskAssessment (risk identification and planning)
+- ProjectTemplate (reusable project structures)
+
+FEATURES:
+- Template-based project creation
+- Stakeholder mapping with RACI matrix
+- Scope creep prevention controls
+- Risk register with impact/probability matrix
+- Project charter generation
+- Approval workflow integration
+-------------------------
+Build a professional OKR tracking system for AgileTrack Pro:
+
+REQUIREMENTS:
+- Use StatsHeader for objective overview and SearchFilters for OKR filtering
+- Implement hierarchical objectives (Project → Epic → Task level)
+- Progress visualization with completion percentages and trend charts
+- SMART criteria validation (Specific, Measurable, Achievable, Relevant, Time-bound)
+- Quarterly/monthly objective cycles with cascading alignment
+- Professional objective cards with progress indicators
+- Team objective alignment and dependency tracking
+- Real-time progress updates and milestone celebrations
+
+COMPONENTS TO CREATE:
+- ObjectivesView (main OKR dashboard)
+- ObjectiveCard (individual OKR display)
+- ProgressRing (circular progress indicators)
+- ObjectiveHierarchy (parent-child relationships)
+- OKRAlignment (team objective mapping)
+- MilestoneTracker (key achievement points)
+
+FEATURES:
+- SMART objective validation
+- Progress tracking automation
+- Objective alignment visualization
+- Team performance dashboards
+- Historical objective analysis
+- Predictive completion forecasting
+------------------
+
+Develop a comprehensive KPI monitoring dashboard for AgileTrack Pro:
+
+REQUIREMENTS:
+- Real-time KPI dashboard with customizable widgets using Recharts
+- Follow our component patterns with professional metrics display
+- Implement traffic light system (Red/Yellow/Green) for indicator status
+- Trending analysis with historical data and forecasting
+- Automated alerting system for threshold breaches
+- Benchmark comparison against industry standards
+- Professional KPI reporting with export capabilities
+- Role-based KPI views (Executive, PM, Team Member perspectives)
+
+COMPONENTS TO CREATE:
+- KPIDashboardView (main monitoring interface)
+- MetricWidget (individual KPI display)
+- TrendChart (historical performance)
+- AlertPanel (threshold notifications)
+- BenchmarkComparison (industry standards)
+- KPIReportBuilder (custom report creation)
+
+FEATURES:
+- Customizable KPI definitions
+- Automated data collection
+- Threshold alerting system
+- Predictive analytics
+- Performance benchmarking
+- Executive summary reports
+--------------------------------
+Create a professional progress reporting system for AgileTrack Pro:
+
+REQUIREMENTS:
+- Structured report templates (Weekly, Monthly, Quarterly, Ad-hoc)
+- Use our form components for report creation with rich text editing
+- Automated progress calculation from task completion and time tracking
+- Visual progress indicators with charts and infographics
+- Stakeholder-specific report views with appropriate detail levels
+- Version control and approval workflows for formal reports
+- Professional PDF generation with company branding
+- Distribution management with read receipts and feedback collection
+
+COMPONENTS TO CREATE:
+- ProgressReportView (report creation interface)
+- ReportTemplate (structured report formats)
+- ProgressSummary (automated progress calculation)
+- StakeholderReport (audience-specific views)
+- ReportDistribution (sharing and tracking)
+- FeedbackCollector (stakeholder input gathering)
+
+FEATURES:
+- Automated progress calculation
+- Multi-format report generation
+- Stakeholder communication tracking
+- Report scheduling and automation
+- Variance analysis and explanations
+- Action item tracking from reports
+---------------------------------
+Build a comprehensive activity management system for AgileTrack Pro:
+
+REQUIREMENTS:
+- Work Breakdown Structure (WBS) builder with drag-and-drop hierarchy
+- Activity definition with dependencies, resources, and duration estimation
+- Critical Path Method (CPM) calculation and visualization
+- Resource allocation and leveling with capacity management
+- Professional activity tracking with status updates and percent complete
+- Integration with time tracking and team assignments
+- Baseline vs actual comparison with variance analysis
+- Mobile-optimized activity updates for field teams
+
+COMPONENTS TO CREATE:
+- WBSBuilder (hierarchical activity structure)
+- ActivityDefinition (detailed activity setup)
+- DependencyMapper (activity relationships)
+- ResourcePlanner (capacity and allocation)
+- ActivityTracker (progress monitoring)
+- VarianceAnalysis (planned vs actual comparison)
+
+FEATURES:
+- Visual WBS creation and editing
+- Dependency constraint management
+- Resource optimization algorithms
+- Critical path highlighting
+- Activity splitting and merging
+- Earned Value Management (EVM)
+------------------------------
+Create an enterprise-grade financial management system for AgileTrack Pro:
+
+REQUIREMENTS:
+- Comprehensive funding source management with donor/sponsor profiles
+- Multi-currency support with real-time exchange rates
+- Fund release scheduling with milestone-based disbursements
+- Professional approval workflows with digital signatures
+- Transaction tracking with detailed audit trails
+- Budget vs actual analysis with variance reporting
+- Compliance reporting for government and institutional requirements
+- Integration with accounting systems and bank reconciliation
+
+COMPONENTS TO CREATE:
+- FundingDashboard (financial overview)
+- SponsorProfile (donor/funder management)
+- FundReleaseScheduler (disbursement planning)
+- ApprovalWorkflow (financial authorization)
+- TransactionTracker (detailed financial records)
+- ComplianceReports (regulatory requirements)
+
+FEATURES:
+- Multi-source funding management
+- Milestone-based fund releases
+- Digital approval workflows
+- Real-time financial dashboards
+- Compliance reporting automation
+- Financial forecasting and planning
+-----------------------------------------
+Develop a professional financial transaction management system for AgileTrack Pro:
+
+REQUIREMENTS:
+- Real-time transaction monitoring with bank integration APIs
+- Professional confirmation workflows with document management
+- Multi-level approval chains for different transaction amounts
+- Automated reconciliation with bank statements and accounting systems
+- Professional financial reporting with audit trail maintenance
+- Digital receipt management and expense categorization
+- Currency conversion tracking and exchange rate management
+- Compliance reporting for financial audits and donor requirements
+
+COMPONENTS TO CREATE:
+- TransactionMonitor (real-time tracking dashboard)
+- ConfirmationWorkflow (approval process management)
+- ReconciliationEngine (automated matching)
+- DigitalReceipts (document management)
+- AuditTrail (transaction history)
+- ComplianceReporter (regulatory documentation)
+
+FEATURES:
+- Real-time transaction notifications
+- Automated bank reconciliation
+- Digital signature workflows
+- Multi-currency transaction support
+- Fraud detection and alerts
+- Comprehensive audit reporting
+-------------------------------------
+Build a professional Kanban board for AgileTrack Pro maintaining design consistency:
+
+REQUIREMENTS:
+- Use @dnd-kit for drag-and-drop functionality (already installed)
+- Implement board layout with customizable columns (To Do, In Progress, Review, Done)
+- Task cards with priority indicators, assignee avatars, due dates, and labels
+- Column headers with task counts and "Add Task" buttons
+- Follow our established color system and component patterns
+- Real-time updates and optimistic UI for smooth interactions
+- Mobile-responsive with horizontal scroll and touch gestures
+- Professional card shadows and hover effects
+
+COMPONENTS TO CREATE:
+- KanbanBoardView (main container)
+- BoardColumn (individual columns)
+- TaskCard (draggable task items)
+- AddTaskModal (quick task creation)
+- ColumnHeader (with counts and actions)
+
+FEATURES:
+- Drag-and-drop between columns
+- Task filtering and search
+- Bulk task operations
+- Column customization
+- Sprint/milestone views
+
+-------------------------------------
+Develop a professional Gantt chart for AgileTrack Pro with enterprise features:
+
+REQUIREMENTS:
+- Create timeline view with task dependencies and critical path highlighting
+- Use our established design system (consistent headers, filters, actions)
+- Implement zooming (days, weeks, months) and scrollable timeline
+- Show task bars with progress indicators and milestone markers
+- Include resource allocation and workload visualization
+- Professional grid layout with alternating row colors
+- Export functionality (PDF, PNG) and print optimization
+- Mobile-responsive with touch gestures for timeline navigation
+
+COMPONENTS TO CREATE:
+- GanttChartView (main container)
+- TimelineHeader (date scale)
+- TaskRow (task information + bar)
+- DependencyLines (connecting related tasks)
+- MilestoneMarkers (key project dates)
+
+FEATURES:
+- Task dependency management
+- Critical path calculation
+- Resource leveling
+- Baseline comparison
+- Progress tracking overlays
+-------------------------------------------
+Build a comprehensive financial dashboard for AgileTrack Pro:
+
+REQUIREMENTS:
+- Follow our StatsHeader + SearchFilters + ResultsList pattern
+- Display budget allocation, spending tracking, and variance analysis
+- Use Recharts for financial visualizations (pie charts, bar charts, trends)
+- Implement expense categorization and approval workflows
+- Show funding sources, release schedules, and payment tracking
+- Professional financial reporting with export capabilities
+- Multi-currency support with proper formatting
+- Role-based access (donors see different views than PMs)
+
+COMPONENTS TO CREATE:
+- BudgetDashboardView (main container)
+- ExpenseTracker (spending monitoring)
+- BudgetAllocation (category breakdown)
+- ApprovalQueue (pending expenses)
+- FinancialReports (exportable summaries)
+
+FEATURES:
+- Budget vs actual comparisons
+- Expense approval workflows
+- Financial forecasting
+- Invoice management
+- Audit trail tracking
+-----------------------------------------------------
+Create a professional analytics dashboard for AgileTrack Pro:
+
+REQUIREMENTS:
+- Use our established component architecture for consistency
+- Implement comprehensive reporting with Recharts visualizations
+- Show project performance metrics, team productivity, and trend analysis
+- Include customizable dashboard widgets and report builders
+- Professional data export (PDF, Excel, CSV) with branding
+- Real-time metrics with auto-refresh capabilities
+- Responsive charts that work on all devices
+- Filter and date range selection following our design patterns
+
+COMPONENTS TO CREATE:
+- AnalyticsDashboardView (main container)
+- MetricsGrid (customizable widgets)
+- ChartContainer (reusable chart wrapper)
+- ReportBuilder (custom report creation)
+- ExportOptions (download/share functionality)
+
+FEATURES:
+- Custom dashboard creation
+- Automated report scheduling
+- Performance benchmarking
+- Predictive analytics
+- Team productivity insights
+
+----------------------------------------
+Extend the existing team management with advanced features for AgileTrack Pro:
+
+REQUIREMENTS:
+- Build upon our existing TeamManagementView component
+- Add team hierarchy, skill management, and workload tracking
+- Implement advanced permission matrix and project assignments
+- Include team performance analytics and capacity planning
+- Use our established patterns for forms, modals, and data display
+- Professional org chart visualization and team calendar
+- Integration with project assignments and time tracking
+- Maintain consistency with existing invite/edit member flows
+
+COMPONENTS TO CREATE:
+- TeamHierarchyView (org chart display)
+- SkillsMatrix (team capabilities)
+- WorkloadPlanner (capacity management)
+- TeamCalendar (availability tracking)
+- PermissionMatrix (advanced RBAC)
+
+FEATURES:
+- Skill-based task assignment
+- Team capacity planning
+- Performance tracking
+- Advanced role management
+- Team collaboration tools
+---------------------------------------
+Build a professional time tracking system for AgileTrack Pro:
+
+REQUIREMENTS:
+- Follow our design system patterns (headers, filters, lists)
+- Implement timer functionality with task/project association
+- Create timesheet views (daily, weekly, monthly) with approval workflows
+- Use professional time visualization and reporting
+- Include billable hours tracking and rate management
+- Mobile-optimized time entry with offline capability
+- Integration with project budgets and resource planning
+- Professional invoicing and client reporting features
+
+COMPONENTS TO CREATE:
+- TimeTrackingView (main dashboard)
+- TimerWidget (active time tracking)
+- TimesheetGrid (time entry interface)
+- ApprovalWorkflow (timesheet reviews)
+- TimeReports (billable hours summary)
+
+FEATURES:
+- Multi-timer support
+- Automatic time categorization
+- Timesheet approvals
+- Billable rate management
+- Client time reporting

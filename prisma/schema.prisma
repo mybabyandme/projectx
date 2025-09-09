@@ -32,8 +32,26 @@ enum ProjectStatus {
 
 enum ProjectMethodology {
   AGILE
-  TRADITIONAL
+  WATERFALL
   HYBRID
+  KANBAN
+  SCRUM
+}
+
+enum ProjectPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ProjectTemplate {
+  GOVERNMENT
+  NGO
+  CORPORATE
+  AGILE
+  WATERFALL
+  CUSTOM
 }
 
 enum TaskStatus {
@@ -51,6 +69,7 @@ enum TaskPriority {
   CRITICAL
 }
 enum PhaseStatus {
+  PLANNED
   NOT_STARTED
   IN_PROGRESS
   COMPLETED
@@ -177,9 +196,12 @@ model Project {
   description    String?             @db.Text
   methodology    ProjectMethodology
   status         ProjectStatus       @default(DRAFT)
+  priority       ProjectPriority     @default(MEDIUM)
   budget         Decimal?            @db.Decimal(15, 2)
+  currency       String?             @default("USD")
   startDate      DateTime?           @map("start_date")
   endDate        DateTime?           @map("end_date")
+  template       ProjectTemplate?
   metadata       Json?
   settings       Json?
   createdAt      DateTime            @default(now()) @map("created_at")
@@ -202,10 +224,11 @@ model ProjectPhase {
   projectId   String      @map("project_id")
   name        String
   description String?     @db.Text
+  order       Int?        @default(0)
   startDate   DateTime?   @map("start_date")
   endDate     DateTime?   @map("end_date")
   budget      Decimal?    @db.Decimal(15, 2)
-  status      PhaseStatus @default(NOT_STARTED)
+  status      PhaseStatus @default(PLANNED)
   metadata    Json?
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")

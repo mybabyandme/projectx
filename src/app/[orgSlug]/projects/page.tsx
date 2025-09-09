@@ -31,13 +31,37 @@ export default async function ProjectsPage({
                 select: {
                   id: true,
                   status: true,
+                  priority: true,
+                  dueDate: true,
                 },
               },
               budgets: {
                 select: {
                   allocatedAmount: true,
                   spentAmount: true,
+                  approvedAmount: true,
                 },
+              },
+              phases: {
+                select: {
+                  id: true,
+                  name: true,
+                  status: true,
+                },
+                orderBy: {
+                  order: 'asc',
+                },
+              },
+              progressReports: {
+                select: {
+                  id: true,
+                  status: true,
+                  createdAt: true,
+                },
+                orderBy: {
+                  createdAt: 'desc',
+                },
+                take: 1,
               },
             },
             orderBy: {
@@ -53,5 +77,19 @@ export default async function ProjectsPage({
     notFound()
   }
 
-  return <ProjectsListView projects={membership.organization.projects} />
+  // Check user permissions
+  const canCreateProjects = ['ORG_ADMIN', 'SUPER_ADMIN', 'PROJECT_MANAGER'].includes(membership.role)
+  const canEditProjects = ['ORG_ADMIN', 'SUPER_ADMIN', 'PROJECT_MANAGER'].includes(membership.role)
+  const canViewFinancials = ['ORG_ADMIN', 'SUPER_ADMIN', 'PROJECT_MANAGER', 'DONOR_SPONSOR'].includes(membership.role)
+
+  return (
+    <ProjectsListView 
+      projects={membership.organization.projects}
+      organizationSlug={params.orgSlug}
+      userRole={membership.role}
+      canCreateProjects={canCreateProjects}
+      canEditProjects={canEditProjects}
+      canViewFinancials={canViewFinancials}
+    />
+  )
 }

@@ -1,0 +1,165 @@
+# Conversation Documentation & Summary Prompt
+
+## Context
+I'm developing **AgileTrack Pro**, a comprehensive project management platform. This conversation has reached its token limit, and I need to document the progress and decisions made for continuation in a new conversation thread.
+
+## Current Project Status
+**Project**: AgileTrack Pro - Enterprise Project Management Platform  
+**Phase**: [Current development phase]  
+**Documentation Location**: `/docs/PROJECT_OVERVIEW.md`
+
+## Task: Document Conversation Progress
+
+Please analyze this entire conversation and create/update the following documentation:
+
+### 1. Implementation Progress Summary
+Create a detailed summary in `/docs/DEVELOPMENT_PROGRESS.md` including:
+
+**Completed Tasks:**
+- List all implemented features, files created, and configurations set up
+- Code changes made and their purposes
+- Database schema updates or migrations applied
+- Any architectural decisions finalized
+
+**Current State:**
+- What's currently working and tested
+- Files that were created or modified
+- Dependencies added or updated
+- Environment configurations completed
+
+**Issues Encountered:**
+- Any bugs found and their resolution status
+- Blockers or challenges identified
+- Workarounds implemented
+- Performance or security considerations noted
+
+**Technical Decisions Made:**
+- Architecture choices and their rationale
+- Technology stack modifications
+- Database design updates
+- API design decisions
+
+### 2. Next Steps Documentation
+Update `/docs/NEXT_STEPS.md` with:
+
+**Immediate Priorities:**
+- Specific tasks that need to be completed next
+- Files that need to be created or modified
+- Features to implement in order of priority
+
+**Technical Debt:**
+- Code that needs refactoring
+- TODO items identified during development
+- Performance optimizations needed
+
+**Testing Requirements:**
+- What needs to be tested
+- Test cases to write
+- Integration tests required
+
+### 3. Code Organization Update
+Update `/docs/CODE_STRUCTURE.md` with:
+- Current file structure
+- Key components and their responsibilities
+- API routes implemented
+- Database schema current state
+- Configuration files and their purposes
+
+### 4. Environment Setup Notes
+Update `/docs/SETUP_NOTES.md` with:
+- Environment variables required
+- Dependencies installed
+- Database setup steps completed
+- Any special configuration needed for local development
+
+## Output Format
+Please structure the documentation as markdown files with clear sections, code snippets where relevant, and actionable next steps. Include timestamps and version information where applicable.
+
+## Additional Requirements
+- Highlight any breaking changes or important architectural decisions
+- Note any deviations from the original project plan
+- Include performance metrics or benchmarks if established
+- Document any user feedback or requirements changes discussed
+
+---
+
+**Please provide a comprehensive summary that will allow seamless continuation of development in a new conversation thread.**
+
+
+
+
+
+
+*************************************************************
+# AgileTrack Pro - Conversation Continuation Prompt
+
+## Context
+I'm continuing development of **AgileTrack Pro**, a comprehensive project management platform. This is a new conversation thread, and I need you to catch up on the current project status from the documentation generated in previous sessions.
+
+this is project folder E:\Projects\nextjs\agiletracker
+use mcp desktop commander to edit the project files directly and make changes directly to the project
+when creating features during the conversation make sure to always check against the prisma schema defined before going ahead to make sure its aligned
+use the json field where it exists and makes sense to store additional info about objects without the need to refined the schema
+
+going forward, if just say "Continue"  mean:
+recheck the file you were writing to avoid mistakes then continue from where you stopped, also always make sure to use mcp desktop commander to read and write and other functions otherwise stop. also make sure to write and update the files directly in the project
+
+## Project Overview
+**AgileTrack Pro** is an enterprise project management platform that bridges agile and traditional PM methodologies, supporting multi-tenant organizations with role-based access control.
+
+## Required Reading - Project Documentation
+Please review these documentation files to understand the current project state:
+
+1. **`/docs/PROJECT_OVERVIEW.md`** - Core project specifications and architecture
+2. **`/docs/DEVELOPMENT_PROGRESS.md`** - Implementation progress from previous sessions
+3. **`/docs/NEXT_STEPS.md`** - Priority tasks and immediate requirements
+4. **`/docs/CODE_STRUCTURE.md`** - Current codebase organization
+5. **`/docs/SETUP_NOTES.md`** - Environment and configuration details
+
+## Technology Stack (For Reference)
+- **Next.js 14** with App Router and TypeScript
+- **NextAuth.js v5** for authentication
+- **PostgreSQL** with **Prisma ORM**
+- **Tailwind CSS** for styling
+- **Cloudinary** for file management
+- **JSONB** columns for flexible metadata storage
+
+## Key Requirements Reminder
+- **Multi-tenant architecture** with organization-based data segregation
+- **Role-based access control** (Donor/Sponsor, Monitor, PM, Team Member)
+- **Agile and traditional PM** support (Kanban boards to Gantt charts)
+- **Financial tracking** and approval workflows
+- **Government project compliance** features
+- **WBS to Gantt chart** generation capabilities
+
+## Development Environment
+- Using **MCP with desktop commander plugin**
+- Direct file system access for implementation
+- Focus on production-ready, enterprise-grade code
+
+## Current Development Session Goals
+
+Based on the documentation review, please:
+
+1. **Assess Current State**: Summarize what's been implemented and what's working
+2. **Identify Next Priority**: Determine the most critical task to tackle next
+3. **Implementation Plan**: Provide specific steps for the next development phase
+4. **Dependencies Check**: Verify if any setup or configuration is needed
+
+## Request Format
+After reviewing the documentation, please respond with:
+
+1. **Status Summary**: Current project state and completion percentage
+2. **Next Task**: Specific next task to implement with clear requirements
+3. **Implementation Approach**: Technical approach and file changes needed
+4. **Questions**: Any clarifications needed about requirements or previous decisions
+
+## Success Criteria
+- Maintain code quality and enterprise standards
+- Ensure multi-tenant security is never compromised
+- Keep the codebase scalable and maintainable
+- Follow the established architecture patterns
+
+---
+
+**Please review the documentation and let me know what we should work on next to continue building AgileTrack Pro effectively.**
