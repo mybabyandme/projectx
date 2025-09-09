@@ -170,10 +170,11 @@ export default function TeamManagementView({
       key: 'user',
       label: 'Member',
       type: 'avatar' as const,
+      primary: true, // Mark as primary field
       render: (user: any) => ({
-        name: user.name || user.email,
-        image: user.image,
-        email: user.email
+        name: user?.name || user?.email || 'Unknown User',
+        image: user?.image,
+        email: user?.email
       })
     },
     {
@@ -193,10 +194,10 @@ export default function TeamManagementView({
       hideOnMobile: true,
     },
     {
-      key: 'user',
+      key: 'email',
       label: 'Email',
       type: 'custom' as const,
-      render: (user: any) => user.email,
+      render: (value: any, item: any) => item?.user?.email || '-',
       hideOnMobile: true,
     }
   ]
@@ -265,7 +266,45 @@ export default function TeamManagementView({
     }
   }
 
-  // Member actions
+  // Universal member actions for ResultsList
+  const memberActions = [
+    {
+      key: 'view',
+      label: 'View Profile',
+      icon: <Eye className="h-4 w-4" />,
+      variant: 'default' as const,
+      onClick: (member: any) => console.log('View member', member.id),
+    },
+    ...(canManageTeam ? [
+      {
+        key: 'edit',
+        label: 'Edit Role',
+        icon: <Edit className="h-4 w-4" />,
+        variant: 'default' as const,
+        onClick: (member: any) => handleEditMember(member),
+      },
+      {
+        key: 'remove',
+        label: 'Remove Member',
+        icon: <Trash2 className="h-4 w-4" />,
+        variant: 'danger' as const,
+        onClick: (member: any) => {
+          // Check if this action should be disabled
+          if (member.role === 'ORG_ADMIN' && adminCount <= 1) {
+            toast({
+              title: 'Cannot Remove Admin',
+              description: 'At least one organization admin is required.',
+              variant: 'destructive',
+            })
+            return
+          }
+          handleRemoveMember(member)
+        },
+      }
+    ] : [])
+  ]
+
+  // Member actions (keeping for backwards compatibility if needed elsewhere)
   const getMemberActions = (member: TeamMember) => {
     const baseActions = [
       {
@@ -349,9 +388,8 @@ export default function TeamManagementView({
       <ResultsList
         items={filteredMembers}
         fields={fields}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        actions={getMemberActions}
+        viewMode="compact"
+        actions={memberActions}
         selectable={canManageTeam}
         selectedItems={selectedMembers}
         onSelectionChange={handleSelectionChange}
@@ -363,6 +401,7 @@ export default function TeamManagementView({
           label: 'Invite First Member',
           onClick: () => setShowInviteModal(true),
         } : undefined}
+        compact={true}
       />
 
       {/* Modals */}

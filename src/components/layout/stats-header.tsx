@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useState } from 'react'
-import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, Plus, PiIcon } from 'lucide-react'
+import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface StatItem {
@@ -93,7 +93,7 @@ export default function StatsHeader({
                 {action.loading ? (
                   <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  Icon && <PiIcon className="h-3.5 w-3.5" />
+                  Icon && Icon
                 )}
                 <span className="hidden sm:inline">{action.label}</span>
               </button>

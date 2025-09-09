@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { 
   Calendar, Clock, AlertTriangle, CheckCircle, Target, 
   FolderKanban, Filter, Search, ArrowRight, MoreVertical,
-  User, Flag, Briefcase
+  User, Flag, Briefcase, Plus, BarChart3
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -41,12 +41,19 @@ const PRIORITY_CONFIG = {
 }
 
 export default function MyTasksView({
-  tasks,
-  taskStats,
+  tasks = [],
+  taskStats = [],
   organizationSlug,
   userId,
   userRole
 }: MyTasksViewProps) {
+  const router = useRouter()
+  
+  // Early safety checks
+  if (!organizationSlug) {
+    return <div className="p-6 text-center text-red-600">Error: Organization not found</div>
+  }
+
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [priorityFilter, setPriorityFilter] = useState('')
@@ -55,17 +62,23 @@ export default function MyTasksView({
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const statusCounts = taskStats.reduce((acc, stat) => {
-      acc[stat.status] = stat._count.status
+    // Ensure tasks is an array and taskStats is valid
+    const safeTasks = Array.isArray(tasks) ? tasks : []
+    const safeTaskStats = Array.isArray(taskStats) ? taskStats : []
+    
+    const statusCounts = safeTaskStats.reduce((acc, stat) => {
+      if (stat && stat.status && stat._count && typeof stat._count.status === 'number') {
+        acc[stat.status] = stat._count.status
+      }
       return acc
     }, {} as Record<string, number>)
 
-    const total = tasks.length
+    const total = safeTasks.length
     const completed = statusCounts.DONE || 0
     const inProgress = statusCounts.IN_PROGRESS || 0
     const blocked = statusCounts.BLOCKED || 0
-    const overdue = tasks.filter(task => 
-      task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE'
+    const overdue = safeTasks.filter(task => 
+      task && task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE'
     ).length
 
     return { total, completed, inProgress, blocked, overdue }
@@ -73,9 +86,10 @@ export default function MyTasksView({
 
   // Get unique projects for filter
   const projects = useMemo(() => {
+    const safeTasks = Array.isArray(tasks) ? tasks : []
     const uniqueProjects = new Map()
-    tasks.forEach(task => {
-      if (task.project) {
+    safeTasks.forEach(task => {
+      if (task && task.project && task.project.id) {
         uniqueProjects.set(task.project.id, task.project)
       }
     })
@@ -84,11 +98,14 @@ export default function MyTasksView({
 
   // Filter tasks
   const filteredTasks = useMemo(() => {
-    return tasks.filter(task => {
+    const safeTasks = Array.isArray(tasks) ? tasks : []
+    return safeTasks.filter(task => {
+      if (!task) return false
+      
       const matchesSearch = !searchQuery || 
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.project?.name.toLowerCase().includes(searchQuery.toLowerCase())
+        (task.title && task.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (task.project?.name && task.project.name.toLowerCase().includes(searchQuery.toLowerCase()))
       
       const matchesStatus = !statusFilter || task.status === statusFilter
       const matchesPriority = !priorityFilter || task.priority === priorityFilter
@@ -117,28 +134,28 @@ export default function MyTasksView({
       value: stats.total,
       change: '+0',
       trend: 'neutral' as const,
-      icon: Target
+      icon: <Target className="h-5 w-5" />
     },
     {
       title: 'In Progress',
       value: stats.inProgress,
       change: '+0',
       trend: 'up' as const,
-      icon: Clock
+      icon: <Clock className="h-5 w-5" />
     },
     {
       title: 'Completed',
       value: stats.completed,
       change: '+0',
       trend: 'up' as const,
-      icon: CheckCircle
+      icon: <CheckCircle className="h-5 w-5" />
     },
     {
       title: 'Overdue',
       value: stats.overdue,
       change: '+0',
       trend: stats.overdue > 0 ? 'down' as const : 'neutral' as const,
-      icon: AlertTriangle
+      icon: <AlertTriangle className="h-5 w-5" />
     }
   ]
 
@@ -197,33 +214,82 @@ export default function MyTasksView({
     }
   ]
 
-  // Task fields for ResultsList
+  // Task fields for ResultsList - optimized for mobile
   const taskFields = [
     {
       key: 'title',
       label: 'Task',
-      render: (task: any) => (
-        <div className="flex items-center space-x-3">
-          <div className={`w-3 h-3 rounded-full ${
-            task.status === 'DONE' ? 'bg-green-500' :
-            task.status === 'IN_PROGRESS' ? 'bg-blue-500' :
-            task.status === 'BLOCKED' ? 'bg-red-500' :
-            'bg-gray-300'
-          }`} />
-          <div>
-            <div className="font-medium text-gray-900">{task.title}</div>
-            <div className="text-sm text-gray-500">
-              {task.project?.name} {task.phase && `• ${task.phase.name}`}
+      primary: true, // Mark as primary field
+      render: (value: any, task: any) => {
+        if (!task) return null
+        const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE'
+        const isToday = task.dueDate && new Date(task.dueDate).toDateString() === new Date().toDateString()
+        
+        return (
+          <div className="flex items-start space-x-3 min-w-0 flex-1">
+            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+              task.status === 'DONE' ? 'bg-green-500' :
+              task.status === 'IN_PROGRESS' ? 'bg-blue-500' :
+              task.status === 'BLOCKED' ? 'bg-red-500' :
+              'bg-gray-300'
+            }`} />
+            <div className="min-w-0 flex-1">
+              <div className={`font-medium text-sm leading-tight ${
+                isOverdue ? 'text-red-700' : 'text-gray-900'
+              }`}>
+                {task.title || 'Untitled Task'}
+              </div>
+              <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                <span className="truncate">{task.project?.name || 'No Project'}</span>
+                {task.phase && (
+                  <>
+                    <span>•</span>
+                    <span className="truncate">{task.phase.name}</span>
+                  </>
+                )}
+              </div>
+              {/* Mobile-specific quick info */}
+              <div className="flex items-center gap-3 mt-2 sm:hidden">
+                {/* Status */}
+                <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                  TASK_STATUS_CONFIG[task.status as keyof typeof TASK_STATUS_CONFIG]?.color || 'bg-gray-100 text-gray-800'
+                }`}>
+                  {TASK_STATUS_CONFIG[task.status as keyof typeof TASK_STATUS_CONFIG]?.label || task.status}
+                </span>
+                
+                {/* Due date */}
+                {task.dueDate && (
+                  <div className={`flex items-center space-x-1 ${
+                    isOverdue ? 'text-red-600' : isToday ? 'text-orange-600' : 'text-gray-500'
+                  }`}>
+                    <Calendar className="h-3 w-3" />
+                    <span className="text-xs">{formatDate(task.dueDate)}</span>
+                    {isOverdue && <AlertTriangle className="h-3 w-3" />}
+                  </div>
+                )}
+                
+                {/* Priority */}
+                {task.priority && task.priority !== 'MEDIUM' && (
+                  <div className={`flex items-center space-x-1 ${
+                    PRIORITY_CONFIG[task.priority as keyof typeof PRIORITY_CONFIG]?.color || 'text-gray-600'
+                  }`}>
+                    <Flag className="h-3 w-3" />
+                    <span className="text-xs">{PRIORITY_CONFIG[task.priority as keyof typeof PRIORITY_CONFIG]?.label}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )
+        )
+      }
     },
     {
       key: 'status',
       label: 'Status',
       type: 'badge' as const,
+      hideOnMobile: true, // Hide on mobile since it's shown in primary field
       render: (task: any) => {
+        if (!task || !task.status) return null
         const config = TASK_STATUS_CONFIG[task.status as keyof typeof TASK_STATUS_CONFIG]
         return config ? { text: config.label, color: config.color } : null
       }
@@ -231,7 +297,9 @@ export default function MyTasksView({
     {
       key: 'priority',
       label: 'Priority',
+      hideOnMobile: true, // Hide on mobile since it's shown in primary field when relevant
       render: (task: any) => {
+        if (!task || !task.priority) return null
         const config = PRIORITY_CONFIG[task.priority as keyof typeof PRIORITY_CONFIG]
         if (!config) return null
         const Icon = config.icon
@@ -244,10 +312,12 @@ export default function MyTasksView({
       }
     },
     {
-      key: 'dueDate', label: 'Due Date',
+      key: 'dueDate', 
+      label: 'Due Date',
       type: 'date' as const,
+      hideOnMobile: true, // Hide on mobile since it's shown in primary field
       render: (task: any) => {
-        if (!task.dueDate) return null
+        if (!task || !task.dueDate) return null
         const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'DONE'
         const isToday = new Date(task.dueDate).toDateString() === new Date().toDateString()
         
@@ -261,34 +331,43 @@ export default function MyTasksView({
           </div>
         )
       }
-    },
-    {
-      key: 'project',
-      label: 'Project',
-      render: (task: any) => (
-        <Link 
-          href={`/${organizationSlug}/projects/${task.project?.id}`}
-          className="flex items-center space-x-2 text-blue-600 hover:text-blue-800"
-        >
-          <FolderKanban className="h-3 w-3" />
-          <span className="text-sm">{task.project?.name}</span>
-          <ArrowRight className="h-3 w-3" />
-        </Link>
-      )
     }
   ]
 
   // Task actions
   const taskActions = [
     {
-      label: 'View Project',
-      action: (task: any) => `//${organizationSlug}/projects/${task.project?.id}`,
-      type: 'link' as const
+      key: 'view-task',
+      label: 'View Task',
+      icon: <Target className="h-4 w-4" />,
+      onClick: (task: any) => {
+        if (task?.id) {
+          window.location.href = `/${organizationSlug}/tasks/${task.id}`
+        }
+      },
+      variant: 'default' as const
     },
     {
+      key: 'view-project',
+      label: 'View Project',
+      icon: <FolderKanban className="h-4 w-4" />,
+      onClick: (task: any) => {
+        if (task?.project?.id) {
+          window.location.href = `/${organizationSlug}/projects/${task.project.id}`
+        }
+      },
+      variant: 'default' as const
+    },
+    {
+      key: 'edit-task',
       label: 'Edit Task',
-      action: (task: any) => console.log('Edit task:', task.id),
-      type: 'button' as const
+      icon: <MoreVertical className="h-4 w-4" />,
+      onClick: (task: any) => {
+        if (task?.id) {
+          console.log('Edit task:', task.id)
+        }
+      },
+      variant: 'default' as const
     }
   ]
 
@@ -298,12 +377,23 @@ export default function MyTasksView({
       <StatsHeader
         title="My Tasks"
         subtitle="Tasks assigned to you across all projects"
-        stats={statsData}
+        stats={statsData.map(stat => ({
+          icon: stat.icon,
+          value: stat.value,
+          label: stat.title
+        }))}
         actions={[
           {
+            label: 'View Reports',
+            onClick: () => router.push(`/${organizationSlug}/tasks/reports`),
+            variant: 'secondary' as const,
+            icon: <BarChart3 className="h-4 w-4" />
+          },
+          {
             label: 'View All Projects',
-            href: `/${organizationSlug}/projects`,
-            variant: 'outline' as const
+            onClick: () => router.push(`/${organizationSlug}/projects`),
+            variant: 'secondary' as const,
+            icon: <Plus className="h-4 w-4" />
           }
         ]}
       />
@@ -327,7 +417,7 @@ export default function MyTasksView({
           {
             label: 'Calendar View',
             onClick: () => console.log('Calendar view'),
-            variant: 'outline' as const
+            variant: 'secondary' as const
           }
         ]}
       />
@@ -405,23 +495,28 @@ export default function MyTasksView({
         items={filteredTasks}
         fields={taskFields}
         actions={taskActions}
-        emptyState={{
-          icon: Target,
-          title: tasks.length === 0 ? 'No tasks assigned' : 'No matching tasks',
-          description: tasks.length === 0 
-            ? 'You dont have any tasks assigned yet. Check back later or contact your project manager.'
-            : 'Try adjusting your search criteria or filters.',
-          action: tasks.length === 0 ? {
-            label: 'View Projects',
-            href: `/${organizationSlug}/projects`
-          } : undefined
+        viewMode="compact"
+        emptyTitle={tasks.length === 0 ? 'No tasks assigned' : 'No matching tasks'}
+        emptyDescription={tasks.length === 0 
+          ? 'You dont have any tasks assigned yet. Check back later or contact your project manager.'
+          : 'Try adjusting your search criteria or filters.'}
+        emptyAction={tasks.length === 0 ? {
+          label: 'View Projects',
+          onClick: () => window.location.href = `/${organizationSlug}/projects`
+        } : undefined}
+        onItemClick={(task) => {
+          if (task?.id) {
+            window.location.href = `/${organizationSlug}/tasks/${task.id}`
+          }
         }}
-        onItemClick={(task) => `//${organizationSlug}/projects/${task.project?.id}`}
         itemClassName={(task) => {
+          if (!task) return ''
           const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE'
           const isBlocked = task.status === 'BLOCKED'
           return `${isOverdue ? 'ring-1 ring-red-200' : ''} ${isBlocked ? 'bg-red-50' : ''}`
         }}
+        compact={true}
+        clickable={true}
       />
 
       {/* Quick Actions for Filtered Tasks */}
@@ -430,7 +525,7 @@ export default function MyTasksView({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Showing {filteredTasks.length} of {tasks.total} tasks
+                Showing {filteredTasks.length} of {stats.total} tasks
               </div>
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm">
