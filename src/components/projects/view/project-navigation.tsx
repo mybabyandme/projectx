@@ -16,6 +16,8 @@ interface ProjectNavigationProps {
   isMobile: boolean
   isOpen?: boolean
   onToggle?: () => void
+  project?: any
+  userRole?: string
 }
 
 export default function ProjectNavigation({
@@ -24,7 +26,9 @@ export default function ProjectNavigation({
   onTabChange,
   isMobile,
   isOpen = false,
-  onToggle
+  onToggle,
+  project,
+  userRole
 }: ProjectNavigationProps) {
   if (isMobile) {
     return (

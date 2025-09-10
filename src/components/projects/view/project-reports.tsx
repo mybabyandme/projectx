@@ -8,7 +8,15 @@ import { formatDate } from '@/lib/utils'
 interface ProjectReportsProps {
   project: any
   organizationSlug: string
-  canEdit: boolean
+  userRole: string
+  permissions: {
+    canEdit: boolean
+    canViewFinancials: boolean
+    canCreateReports: boolean
+    canApproveReports: boolean
+    canManageTasks: boolean
+  }
+  userId: string
 }
 
 const getReportStatusIcon = (status: string) => {
@@ -42,11 +50,15 @@ const getReportTypeColor = (type: string) => {
 export default function ProjectReports({ 
   project, 
   organizationSlug, 
-  canEdit 
+  userRole,
+  permissions,
+  userId
 }: ProjectReportsProps) {
   const [selectedFilter, setSelectedFilter] = useState('all')
   
   const reports = project.progressReports || []
+  
+  const canCreateReports = permissions.canCreateReports
   
   const filteredReports = reports.filter((report: any) => {
     if (selectedFilter === 'all') return true
@@ -77,7 +89,7 @@ export default function ProjectReports({
             <option value="REJECTED">Rejected</option>
           </select>
           
-          {canEdit && (
+          {canCreateReports && (
             <Button>
               <Plus className="h-4 w-4 mr-2" />
               New Report
@@ -289,7 +301,7 @@ export default function ProjectReports({
               : 'Try adjusting your filter to see more reports'
             }
           </p>
-          {canEdit && reports.length === 0 && (
+          {canCreateReports && reports.length === 0 && (
             <Button>
               <Plus className="h-4 w-4 mr-2" />
               Create First Report
@@ -299,7 +311,7 @@ export default function ProjectReports({
       )}
 
       {/* Quick Report Templates */}
-      {canEdit && (
+      {canCreateReports && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Report Templates</h3>
           

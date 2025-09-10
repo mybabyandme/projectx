@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { 
   ArrowLeft, Edit, MoreVertical, Calendar, DollarSign, Users, 
   Target, AlertTriangle, TrendingUp, Clock, CheckCircle, 
-  BarChart3, FileText, Settings, Gantt
+  BarChart3, FileText, Settings, BarChart2, Activity, 
+  Globe, MapPin, Building
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
@@ -16,6 +17,8 @@ import ProjectTeam from './project-team'
 import ProjectFinancials from './project-financials'
 import ProjectReports from './project-reports'
 import ProjectSettings from './project-settings'
+import ProjectMonitoring from './project-monitoring'
+import ProjectPQGDashboard from './project-pqg-dashboard'
 import RiskDashboard from '../risk-dashboard'
 import GanttView from '../gantt-view'
 import ProgressReporting from '../progress-reporting'
@@ -24,90 +27,137 @@ interface ProjectViewProps {
   project: any
   organizationSlug: string
   userRole: string
-  canEdit: boolean
-  canViewFinancials: boolean
   userId: string
+  permissions: {
+    canEdit: boolean
+    canViewFinancials: boolean
+    canCreateReports: boolean
+    canApproveReports: boolean
+    canManageTasks: boolean
+  }
 }
-
-const PROJECT_TABS = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    icon: BarChart3,
-    description: 'Project summary and key metrics'
-  },
-  {
-    id: 'tasks',
-    label: 'Tasks',
-    icon: CheckCircle,
-    description: 'Task management and progress'
-  },
-  {
-    id: 'gantt',
-    label: 'Timeline',
-    icon: Calendar,
-    description: 'Gantt chart and project timeline'
-  },
-  {
-    id: 'team',
-    label: 'Team',
-    icon: Users,
-    description: 'Team members and assignments'
-  },
-  {
-    id: 'risks',
-    label: 'Risks',
-    icon: AlertTriangle,
-    description: 'Risk assessment and mitigation'
-  },
-  {
-    id: 'financials',
-    label: 'Financials',
-    icon: DollarSign,
-    description: 'Budget and expense tracking',
-    requiresPermission: true
-  },
-  {
-    id: 'reports',
-    label: 'Reports',
-    icon: FileText,
-    description: 'Progress reports and analytics'
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
-    description: 'Project configuration',
-    requiresEdit: true
-  },
-]
 
 export default function ProjectView({
   project,
   organizationSlug,
   userRole,
-  canEdit,
-  canViewFinancials,
-  userId
+  userId,
+  permissions
 }: ProjectViewProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  // Calculate project metrics
-  const totalTasks = project.tasks?.length || 0
-  const completedTasks = project.tasks?.filter((task: any) => task.status === 'DONE')?.length || 0
-  const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
+  // Determine if this is a government project
+  const isGovernmentProject = project.pqgData && 
+    (project.methodology === 'WATERFALL' || project.pqgData.priority)
 
-  const totalBudget = project.budgets?.reduce((sum: number, budget: any) => sum + Number(budget.allocatedAmount), 0) || 0
-  const spentBudget = project.budgets?.reduce((sum: number, budget: any) => sum + Number(budget.spentAmount), 0) || 0
+  // Build dynamic tabs based on project type and permissions
+  const getProjectTabs = () => {
+    const baseTabs = [
+      {
+        id: 'overview',
+        label: 'Overview',
+        icon: BarChart3,
+        description: 'Project summary and key metrics'
+      },
+      {
+        id: 'tasks',
+        label: 'Tasks',
+        icon: CheckCircle,
+        description: 'Task management and progress'
+      },
+      {
+        id: 'timeline',
+        label: 'Timeline',
+        icon: Calendar,
+        description: 'Project timeline and milestones'
+      },
+      {
+        id: 'team',
+        label: 'Team',
+        icon: Users,
+        description: 'Team members and assignments'
+      },
+    ]
 
-  // Filter tabs based on permissions
-  const availableTabs = PROJECT_TABS.filter(tab => {
-    if (tab.requiresPermission && !canViewFinancials) return false
-    if (tab.requiresEdit && !canEdit) return false
-    return true
-  })
+    // Add methodology-specific tabs
+    if (project.methodology === 'AGILE' || project.methodology === 'SCRUM') {
+      baseTabs.push({
+        id: 'sprints',
+        label: 'Sprints',
+        icon: TrendingUp,
+        description: 'Sprint planning and velocity'
+      })
+    }
+
+    if (project.methodology === 'WATERFALL' || project.methodology === 'HYBRID') {
+      baseTabs.push({
+        id: 'gantt',
+        label: 'Gantt Chart',
+        icon: BarChart2,
+        description: 'Project schedule and dependencies'
+      })
+    }
+
+    // Add government-specific tab
+    if (isGovernmentProject) {
+      baseTabs.push({
+        id: 'pqg',
+        label: 'PQG Dashboard',
+        icon: Building,
+        description: 'Government priorities and compliance'
+      })
+    }
+
+    // Add monitoring tab for all projects
+    baseTabs.push({
+      id: 'monitoring',
+      label: 'Monitoring',
+      icon: Activity,
+      description: 'Performance monitoring and evaluation'
+    })
+
+    // Add risk management
+    baseTabs.push({
+      id: 'risks',
+      label: 'Risks',
+      icon: AlertTriangle,
+      description: 'Risk assessment and mitigation'
+    })
+
+    // Add financial tab if user has permissions
+    if (permissions.canViewFinancials) {
+      baseTabs.push({
+        id: 'financials',
+        label: 'Financials',
+        icon: DollarSign,
+        description: 'Budget and expense tracking'
+      })
+    }
+
+    // Add reports tab
+    baseTabs.push({
+      id: 'reports',
+      label: 'Reports',
+      icon: FileText,
+      description: 'Progress reports and analytics'
+    })
+
+    // Add settings tab if user can edit
+    if (permissions.canEdit) {
+      baseTabs.push({
+        id: 'settings',
+        label: 'Settings',
+        icon: Settings,
+        description: 'Project configuration'
+      })
+    }
+
+    return baseTabs
+  }
+
+  const availableTabs = getProjectTabs()
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId)
@@ -128,23 +178,46 @@ export default function ProjectView({
         return (
           <ProjectOverview
             project={project}
-            progressPercentage={progressPercentage}
-            totalTasks={totalTasks}
-            completedTasks={completedTasks}
-            totalBudget={totalBudget}
-            spentBudget={spentBudget}
-            canViewFinancials={canViewFinancials}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            permissions={permissions}
           />
         )
+
       case 'tasks':
         return (
           <ProjectTasks
             project={project}
             organizationSlug={organizationSlug}
-            canEdit={canEdit}
+            userRole={userRole}
+            canEdit={permissions.canManageTasks}
             userId={userId}
           />
         )
+
+      case 'timeline':
+        return (
+          <div className="p-6">
+            {/* Enhanced timeline view based on methodology */}
+            {project.methodology === 'WATERFALL' || project.methodology === 'HYBRID' ? (
+              <GanttView
+                project={project}
+                tasks={project.tasks || []}
+                onTaskClick={(task) => console.log('Task clicked:', task)}
+                onTaskUpdate={(taskId, updates) => console.log('Task update:', taskId, updates)}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Timeline View</h3>
+                <p className="text-gray-600">
+                  Timeline visualization for {project.methodology} projects coming soon.
+                </p>
+              </div>
+            )}
+          </div>
+        )
+
       case 'gantt':
         return (
           <div className="p-6">
@@ -156,64 +229,122 @@ export default function ProjectView({
             />
           </div>
         )
+
+      case 'sprints':
+        return (
+          <div className="p-6">
+            <div className="text-center py-12">
+              <TrendingUp className="h-12 w-12 text-blue-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Sprint Management</h3>
+              <p className="text-gray-600 mb-4">
+                Sprint planning, backlog management, and velocity tracking for {project.name}.
+              </p>
+              <p className="text-sm text-gray-500">
+                Sprint management features coming soon. Use Tasks tab for current sprint work.
+              </p>
+            </div>
+          </div>
+        )
+
       case 'team':
         return (
           <ProjectTeam
             project={project}
             organizationSlug={organizationSlug}
-            canEdit={canEdit}
+            userRole={userRole}
+            canEdit={permissions.canEdit}
+            userId={userId}
           />
         )
+
+      case 'pqg':
+        return isGovernmentProject ? (
+          <ProjectPQGDashboard
+            project={project}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            canEdit={permissions.canEdit}
+          />
+        ) : null
+
+      case 'monitoring':
+        return (
+          <ProjectMonitoring
+            project={project}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            permissions={permissions}
+          />
+        )
+
       case 'risks':
         return (
           <div className="p-6">
             <RiskDashboard
               project={project}
-              canEdit={canEdit}
+              canEdit={permissions.canEdit}
             />
           </div>
         )
+
       case 'financials':
-        return canViewFinancials ? (
+        return permissions.canViewFinancials ? (
           <ProjectFinancials
             project={project}
-            canEdit={canEdit}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            canEdit={permissions.canEdit}
+            userId={userId}
           />
         ) : null
+
       case 'reports':
         return (
-          <div className="p-6">
-            <ProgressReporting
-              project={project}
-              tasks={project.tasks || []}
-              progressReports={project.progressReports || []}
-              canCreateReports={canEdit}
-              onCreateReport={() => console.log('Create report')}
-              onViewReport={(report) => console.log('View report:', report)}
-            />
-          </div>
+          <ProjectReports
+            project={project}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            permissions={permissions}
+            userId={userId}
+          />
         )
+
       case 'settings':
-        return canEdit ? (
+        return permissions.canEdit ? (
           <ProjectSettings
             project={project}
             organizationSlug={organizationSlug}
+            userRole={userRole}
+            userId={userId}
           />
         ) : null
+
       default:
-        return null
+        return (
+          <div className="p-6">
+            <div className="text-center py-12">
+              <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Content Not Available</h3>
+              <p className="text-gray-600">
+                The requested content is not available or you don't have permission to view it.
+              </p>
+            </div>
+          </div>
+        )
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Project Header */}
+      {/* Enhanced Project Header */}
       <ProjectHeader
         project={project}
-        progressPercentage={progressPercentage}
+        organizationSlug={organizationSlug}
+        userRole={userRole}
+        permissions={permissions}
         onBack={handleBack}
-        onEdit={canEdit ? handleEdit : undefined}
-        canEdit={canEdit}
+        onEdit={permissions.canEdit ? handleEdit : undefined}
+        isGovernmentProject={isGovernmentProject}
       />
 
       {/* Main Content */}
@@ -227,6 +358,8 @@ export default function ProjectView({
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
                 isMobile={false}
+                project={project}
+                userRole={userRole}
               />
             </div>
           </div>
@@ -240,12 +373,14 @@ export default function ProjectView({
               isMobile={true}
               isOpen={isMobileMenuOpen}
               onToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              project={project}
+              userRole={userRole}
             />
           </div>
 
           {/* Tab Content */}
           <div className="flex-1 min-w-0">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-[600px]">
               {renderTabContent()}
             </div>
           </div>
