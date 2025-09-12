@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { FileText, Plus, Download, Calendar, User, CheckCircle, Clock, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatDate } from '@/lib/utils'
+import ProgressReportModal from '../progress-report-modal'
 
 interface ProjectReportsProps {
   project: any
@@ -205,7 +206,7 @@ export default function ProjectReports({
                     Export
                   </Button>
                   
-                  {canEdit && report.status === 'DRAFT' && (
+                  {report.status === 'DRAFT' && (
                     <Button size="sm">
                       Edit
                     </Button>

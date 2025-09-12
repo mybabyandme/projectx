@@ -22,6 +22,8 @@ import ProjectPQGDashboard from './project-pqg-dashboard'
 import RiskDashboard from '../risk-dashboard'
 import GanttView from '../gantt-view'
 import ProgressReporting from '../progress-reporting'
+import SprintManagement from '../sprint-management'
+import TimelineView from '../timeline-view'
 
 interface ProjectViewProps {
   project: any
@@ -197,25 +199,12 @@ export default function ProjectView({
 
       case 'timeline':
         return (
-          <div className="p-6">
-            {/* Enhanced timeline view based on methodology */}
-            {project.methodology === 'WATERFALL' || project.methodology === 'HYBRID' ? (
-              <GanttView
-                project={project}
-                tasks={project.tasks || []}
-                onTaskClick={(task) => console.log('Task clicked:', task)}
-                onTaskUpdate={(taskId, updates) => console.log('Task update:', taskId, updates)}
-              />
-            ) : (
-              <div className="text-center py-12">
-                <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Timeline View</h3>
-                <p className="text-gray-600">
-                  Timeline visualization for {project.methodology} projects coming soon.
-                </p>
-              </div>
-            )}
-          </div>
+          <TimelineView
+            project={project}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            permissions={permissions}
+          />
         )
 
       case 'gantt':
@@ -232,18 +221,13 @@ export default function ProjectView({
 
       case 'sprints':
         return (
-          <div className="p-6">
-            <div className="text-center py-12">
-              <TrendingUp className="h-12 w-12 text-blue-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Sprint Management</h3>
-              <p className="text-gray-600 mb-4">
-                Sprint planning, backlog management, and velocity tracking for {project.name}.
-              </p>
-              <p className="text-sm text-gray-500">
-                Sprint management features coming soon. Use Tasks tab for current sprint work.
-              </p>
-            </div>
-          </div>
+          <SprintManagement
+            project={project}
+            organizationSlug={organizationSlug}
+            userRole={userRole}
+            canEdit={permissions.canEdit}
+            userId={userId}
+          />
         )
 
       case 'team':

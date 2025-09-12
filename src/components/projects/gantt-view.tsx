@@ -77,7 +77,7 @@ export default function GanttView({
       start: addDays(minDate, -7),
       end: addDays(maxDate, 14)
     }
-  }, [tasks, project, currentDate])
+  }, [tasks, project.startDate, project.endDate, currentDate])
 
   // Generate time periods based on view mode
   const timePeriods = useMemo(() => {
@@ -142,29 +142,45 @@ export default function GanttView({
     }
   }
 
-  // Get task progress percentage
+  // Get task progress percentage - optimized
   const getTaskProgress = (task: any) => {
-    if (task.status === 'DONE') return 100
-    if (task.status === 'TODO') return 0
-    if (task.status === 'IN_PROGRESS') return 50
-    if (task.status === 'IN_REVIEW') return 75
-    if (task.status === 'BLOCKED') return 25
-    return 0
+    switch (task.status) {
+      case 'DONE': return 100
+      case 'TODO': return 0
+      case 'IN_PROGRESS': return 50
+      case 'IN_REVIEW': return 75
+      case 'BLOCKED': return 25
+      default: return 0
+    }
   }
 
-  // Sort tasks by hierarchy (parents first, then children)
+  // Sort tasks by hierarchy (parents first, then children) - optimized
   const sortedTasks = useMemo(() => {
-    const taskMap = new Map(tasks.map(task => [task.id, task]))
-    const rootTasks = tasks.filter(task => !task.parentId)
+    if (!tasks || tasks.length === 0) return []
+    
     const result: any[] = []
+    const processed = new Set()
     
     const addTaskAndChildren = (task: any, level = 0) => {
+      if (processed.has(task.id)) return
+      processed.add(task.id)
+      
       result.push({ ...task, level })
-      const children = tasks.filter(t => t.parentId === task.id)
+      const children = tasks.filter(t => t.parentId === task.id && !processed.has(t.id))
       children.forEach(child => addTaskAndChildren(child, level + 1))
     }
     
+    // Process root tasks first
+    const rootTasks = tasks.filter(task => !task.parentId)
     rootTasks.forEach(task => addTaskAndChildren(task))
+    
+    // Process any remaining orphaned tasks
+    tasks.forEach(task => {
+      if (!processed.has(task.id)) {
+        addTaskAndChildren(task)
+      }
+    })
+    
     return result
   }, [tasks])
 

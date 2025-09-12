@@ -205,6 +205,13 @@ export default async function ProjectPage({
 
   const enhancedProject = {
     ...project,
+    budget: project.budget ? Number(project.budget) : 0,
+    budgets: project.budgets.map(budget => ({
+      ...budget,
+      allocatedAmount: Number(budget.allocatedAmount),
+      spentAmount: Number(budget.spentAmount),
+      approvedAmount: Number(budget.approvedAmount),
+    })),
     metrics: {
       ...projectMetrics,
       taskCompletionRate,

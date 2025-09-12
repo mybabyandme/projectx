@@ -12,7 +12,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import PQGDashboard from './pqg-dashboard'
 import ProjectMonitoring from './project-monitoring'
 import PerformanceAnalytics from './performance-analytics'
-import ReportExporter from './report-exporter'
+import ReportExporter from './enhanced-report-exporter'
 
 interface AdvancedReportingProps {
   organizationSlug: string
@@ -337,6 +337,7 @@ export default function AdvancedReporting({
             organizationData={reportingData}
             canExport={canExport}
             userRole={userRole}
+            userId={userId}
           />
         )
 

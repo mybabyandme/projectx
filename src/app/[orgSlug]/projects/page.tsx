@@ -82,9 +82,21 @@ export default async function ProjectsPage({
   const canEditProjects = ['ORG_ADMIN', 'SUPER_ADMIN', 'PROJECT_MANAGER'].includes(membership.role)
   const canViewFinancials = ['ORG_ADMIN', 'SUPER_ADMIN', 'PROJECT_MANAGER', 'DONOR_SPONSOR'].includes(membership.role)
 
+  // Convert Decimal objects to numbers for client component compatibility
+  const serializedProjects = membership.organization.projects.map(project => ({
+    ...project,
+    budget: project.budget ? Number(project.budget) : 0,
+    budgets: project.budgets.map(budget => ({
+      ...budget,
+      allocatedAmount: Number(budget.allocatedAmount),
+      spentAmount: Number(budget.spentAmount),
+      approvedAmount: Number(budget.approvedAmount),
+    })),
+  }))
+
   return (
     <ProjectsListView 
-      projects={membership.organization.projects}
+      projects={serializedProjects}
       organizationSlug={params.orgSlug}
       userRole={membership.role}
       canCreateProjects={canCreateProjects}
